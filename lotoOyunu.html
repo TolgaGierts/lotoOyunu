@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        input {
+            width: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Sayisal Loto Oyunu</h1>
+    <p>Asagidaki inputlara tahminleri giriniz.</p>
+    <div id="tahmin">
+        <input class="tahmin" type="number">
+        <input class="tahmin" type="number">
+        <input class="tahmin" type="number">
+        <input class="tahmin" type="number">
+        <input class="tahmin" type="number">
+        <input class="tahmin" type="number">
+        <button id="tahminBtn" onclick="tahminGir()">Tahmin Gir</button>
+        <p id="girildiInfo"></p>
+    </div>
+    <hr>
+    <div id="sonuclar">
+        <button onclick='kurayiCek()' id="kuraBtn" disabled>Kurayi Cek</button>
+        <div>
+            <p>Loto Sayilari</p>
+            <input class="sonuc" type="number" disabled>
+            <input class="sonuc" type="number" disabled>
+            <input class="sonuc" type="number" disabled>
+            <input class="sonuc" type="number" disabled>
+            <input class="sonuc" type="number" disabled>
+            <input class="sonuc" type="number" disabled>
+        </div>
+        <br>
+        <p id="sonucInfo"></p>
+
+    </div>
+
+
+    <script>
+        const tahminArray = []
+        const sonucArray = []
+        let tahminler = document.querySelectorAll(".tahmin");
+        let sonuclar = document.querySelectorAll('.sonuc')
+
+        tahminler.forEach((tahmin, i) => tahmin.addEventListener('change', (e) => {
+            if (ayniTahminKontrol(tahmin.value)) {
+                alert("Aynı sayıya tekrar tahmin edemezsiniz.")
+                e.target.value = ""
+                e.target.focus()
+                return
+            }
+            else if (tahmin.value < 1 || tahmin.value > 49) {
+                alert("1-49 Arasında Bir Sayi Tahmin Etmeniz Gerekiyor")
+                tahmin.value = ""
+                e.target.focus()
+                return
+            }
+            else {
+                tahminArray[i] = +tahmin.value;
+                console.log(tahminArray);
+            }
+        }))
+
+        function tahminGir() {
+            if (tahminArray.includes(undefined) || tahminArray.length < 6) return alert("Her alanı doldurmadan giriş yapamazsınız")
+            document.getElementById('tahminBtn').disabled = true
+            document.getElementById('kuraBtn').disabled = false
+            document.getElementById('girildiInfo').innerText = 'Tahminler Girildi'
+            const sirali = tahminArray.sort((a, b) => a - b)
+            tahminler.forEach((tahmin, i) => tahmin.value = sirali[i])
+        }
+
+
+        function kurayiCek() {
+            for (let index = 0; index < 6; index++) {
+                sonucArray[index] = Math.floor(Math.random() * 49) + 1
+            }
+            const siraliSonuc = sonucArray.sort((a, b) => a - b)
+            // const siraliSonuc = [12, 13, 14, 15, 16, 17]
+            // console.log(siraliSonuc)
+            sonuclar.forEach((sonuc, i) => sonuc.value = siraliSonuc[i])
+
+            let dogruSayisi = 0;
+            let bilinenSayilar = []
+            for (let index = 0; index < 6; index++) {
+                if (siraliSonuc.includes(tahminArray[index])) {
+                    dogruSayisi++
+                    bilinenSayilar.push(tahminArray[index])
+                }
+            }
+            document.getElementById('sonucInfo').innerText = `Bilinen sayilar: ${bilinenSayilar.join(',')}\n${dogruSayisi} adet sayi bildiniz.`
+        }
+
+        function ayniTahminKontrol(sayi) {
+            return tahminArray.some(tahmin => tahmin === sayi);
+        }
+
+    </script>
+</body>
+
+</html>
